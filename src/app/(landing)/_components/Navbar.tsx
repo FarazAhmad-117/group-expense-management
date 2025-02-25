@@ -49,10 +49,14 @@ const Navbar = () => {
             </div>
           </div>
           <div className="hidden sm:ml-6 sm:flex sm:items-center">
-            <Button variant="outline" className="mr-2">
-              Log in
-            </Button>
-            <Button>Sign up</Button>
+            <Link href={"/login"}>
+              <Button variant="outline" className="mr-2">
+                Log in
+              </Button>
+            </Link>
+            <Link href={"/signup"}>
+              <Button>Sign up</Button>
+            </Link>
           </div>
           <div className="flex items-center sm:hidden">
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
