@@ -1,7 +1,7 @@
 "use client";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function ProtectedRoute({
   children,
@@ -10,10 +10,15 @@ export default function ProtectedRoute({
 }) {
   const { user } = useAuth();
   const router = useRouter();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (user === undefined) return; // Wait until user is initialized
     if (!user) router.push("/login");
+    else setLoading(false);
   }, [user, router]);
 
-  return user ? children : null;
+  if (loading) return <div>Loading...</div>; // Prevent flicker
+
+  return children;
 }

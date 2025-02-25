@@ -15,13 +15,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
-    const getUser = async () => {
+    const getSession = async () => {
       const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      setUser(user);
+        data: { session },
+      } = await supabase.auth.getSession();
+      setUser(session?.user || null);
     };
-    getUser();
+
+    getSession(); // Fetch session on mount
 
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (_, session) => {
