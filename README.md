@@ -2,7 +2,7 @@
 
 ## TODOS:
 
-- [ ] Make A Beautiful Landing Page
+- [x] Make A Beautiful Landing Page
 - [ ] Make Login/SignUp Pages
 - [ ] Make a Dashboard Page
 - [ ] Make a complete Authentication Using Supabase
