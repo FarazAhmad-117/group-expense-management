@@ -19,7 +19,8 @@ import { Pencil, Plus, Trash } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { Group } from "@/types";
 
-const fetcher = (url: string) => axios.get(url).then((res) => res.data);
+const fetcher = (url: string) =>
+  axios.get(url, { withCredentials: true }).then((res) => res.data);
 
 const GroupsPage = () => {
   const { data: groups, mutate } = useSWR("/api/groups", fetcher);

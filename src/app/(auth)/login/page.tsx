@@ -31,7 +31,7 @@ export default function Login() {
     setIsLoading(true);
     setError("");
     try {
-      await login(email, password);
+      login(email, password);
       router.push("/dashboard");
     } catch (error) {
       console.log("Error", error);

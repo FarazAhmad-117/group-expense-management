@@ -1,37 +1,27 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-
-const getSupabase = async () => {
-  const cookieStore = await cookies(); // ✅ Await cookies before using
-  const token = cookieStore.get("sb-access-token")?.value;
-
-  const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-    global: {
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
-    },
-  });
-
-  return supabase;
-};
-
 export async function POST(req: Request) {
-  const supabase = await getSupabase();
-  const result = await supabase.auth.getUser();
-  const { data: user, error: sessionError } = await supabase.auth.getUser();
+  const cookieStore = await cookies(); // Await cookies
+  const supabase = createRouteHandlerClient({ cookies: () => cookieStore }); // Pass as function
 
-  if (sessionError || !user)
+  const {
+    data: { user },
+    error: sessionError,
+  } = await supabase.auth.getUser();
+
+  if (sessionError || !user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
   const { name } = await req.json();
-  if (!name)
+  if (!name) {
     return NextResponse.json(
       { error: "Group name is required" },
       { status: 400 }
     );
+  }
 
   const { data, error } = await supabase
     .from("groups")
@@ -39,26 +29,37 @@ export async function POST(req: Request) {
     .select()
     .single();
 
-  if (error)
+  if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
+  }
 
   return NextResponse.json(data, { status: 201 });
 }
 
 export async function GET() {
-  const supabase = await getSupabase();
-  const { data: user, error: sessionError } = await supabase.auth.getUser();
+  const cookieStore = await cookies(); // Await cookies
+  const supabase = createRouteHandlerClient({ cookies: () => cookieStore }); // Pass as function
 
-  if (sessionError || !user)
+  const result = await supabase.auth.getSession();
+  console.log(result);
+
+  const {
+    data: { user },
+    error: sessionError,
+  } = await supabase.auth.getUser();
+
+  if (sessionError || !user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
   const { data, error } = await supabase
     .from("groups")
     .select("*")
     .eq("created_by", user.id);
 
-  if (error)
+  if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
+  }
 
   return NextResponse.json(data, { status: 200 });
 }
